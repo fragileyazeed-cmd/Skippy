@@ -33,6 +33,33 @@
         <GradientStop Color="{StaticResource AccentBColor}" Offset="1"/>
     </LinearGradientBrush>
 
+    <!-- ===== section palettes: Clip violet, Audio teal, Screen amber, Saving pink ===== -->
+    <LinearGradientBrush x:Key="AccentViolet" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#7B5CFF" Offset="0"/>
+        <GradientStop Color="#B65CFF" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AccentTeal" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#14B8A6" Offset="0"/>
+        <GradientStop Color="#38BDF8" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AccentAmber" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F59E0B" Offset="0"/>
+        <GradientStop Color="#F97316" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AccentPink" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#EC4899" Offset="0"/>
+        <GradientStop Color="#F43F5E" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- per-card accent: each card overrides these four in its own Resources -->
+    <LinearGradientBrush x:Key="CardAccent" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource AccentAColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource AccentBColor}" Offset="1"/>
+    </LinearGradientBrush>
+    <Color x:Key="CardGlow">#7B5CFF</Color>
+    <SolidColorBrush x:Key="CardTint" Color="#267B5CFF"/>
+    <SolidColorBrush x:Key="CardTintBorder" Color="#557B5CFF"/>
+
     <!-- ===== text ===== -->
     <Style x:Key="SectionTitle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="11.5"/>
@@ -51,8 +78,57 @@
         <Setter Property="Background" Value="{StaticResource CardBg}"/>
         <Setter Property="BorderBrush" Value="{StaticResource Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="CornerRadius" Value="16"/>
         <Setter Property="Padding" Value="18,16"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource CardTintBorder}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- coloured icon square used in section headers and stat tiles -->
+    <Style x:Key="Badge" TargetType="Border">
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource CardTint}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardTintBorder}"/>
+    </Style>
+    <Style x:Key="BadgeGlyph" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{DynamicResource CardAccent}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="CardTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="10,0,0,0"/>
+    </Style>
+    <Style x:Key="CardHint" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11.5"/>
+        <Setter Property="Foreground" Value="{StaticResource Text3}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+    <Style x:Key="StatTile" TargetType="Border">
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Background" Value="#0FFFFFFF"/>
+        <Setter Property="BorderBrush" Value="#1AFFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,8,12,8"/>
+        <Setter Property="Margin" Value="4"/>
+    </Style>
+    <Style x:Key="Chip" TargetType="Border">
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource CardTint}"/>
+        <Setter Property="Padding" Value="9,4,10,4"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
     </Style>
 
     <!-- ===== segmented control (RadioButtons inside a rounded track) ===== -->
@@ -67,9 +143,9 @@
                 <ControlTemplate TargetType="RadioButton">
                     <Grid Height="32">
                         <Border x:Name="Hover" CornerRadius="8" Background="{StaticResource ControlHover}" Opacity="0"/>
-                        <Border x:Name="Pill" CornerRadius="8" Background="{StaticResource Accent}" Opacity="0">
+                        <Border x:Name="Pill" CornerRadius="8" Background="{DynamicResource CardAccent}" Opacity="0">
                             <Border.Effect>
-                                <DropShadowEffect Color="#7B5CFF" BlurRadius="14" ShadowDepth="0" Opacity="0.45"/>
+                                <DropShadowEffect Color="{DynamicResource CardGlow}" BlurRadius="16" ShadowDepth="0" Opacity="0.55"/>
                             </Border.Effect>
                         </Border>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0"/>
@@ -125,7 +201,9 @@
                         <ContentPresenter VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <Grid Grid.Column="1" Width="44" Height="24">
                             <Border x:Name="Track" CornerRadius="12" Background="{StaticResource Control}" BorderBrush="{StaticResource StrokeHi}" BorderThickness="1"/>
-                            <Border x:Name="TrackOn" CornerRadius="12" Background="{StaticResource Accent}" Opacity="0"/>
+                            <Border x:Name="TrackOn" CornerRadius="12" Background="{DynamicResource CardAccent}" Opacity="0">
+                                <Border.Effect><DropShadowEffect Color="{DynamicResource CardGlow}" BlurRadius="12" ShadowDepth="0" Opacity="0.5"/></Border.Effect>
+                            </Border>
                             <Ellipse x:Name="Thumb" Width="16" Height="16" Fill="#C9C3D6" HorizontalAlignment="Left" Margin="4,0,0,0">
                                 <Ellipse.RenderTransform>
                                     <TranslateTransform x:Name="ThumbX" X="0"/>
@@ -200,8 +278,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Grid>
-                        <Border x:Name="B" CornerRadius="9" Background="{StaticResource Accent}" Padding="{TemplateBinding Padding}">
-                            <Border.Effect><DropShadowEffect Color="#7B5CFF" BlurRadius="14" ShadowDepth="0" Opacity="0.5"/></Border.Effect>
+                        <Border x:Name="B" CornerRadius="9" Background="{DynamicResource CardAccent}" Padding="{TemplateBinding Padding}">
+                            <Border.Effect><DropShadowEffect Color="{DynamicResource CardGlow}" BlurRadius="14" ShadowDepth="0" Opacity="0.5"/></Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <Border x:Name="Shine" CornerRadius="9" Background="White" Opacity="0" IsHitTestVisible="False"/>
@@ -339,7 +417,7 @@
                                             <Setter TargetName="B" Property="BorderBrush" Value="{StaticResource StrokeHi}"/>
                                         </Trigger>
                                         <Trigger Property="IsChecked" Value="True">
-                                            <Setter TargetName="B" Property="BorderBrush" Value="#7B5CFF"/>
+                                            <Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource CardAccent}"/>
                                             <Trigger.EnterActions>
                                                 <BeginStoryboard><Storyboard><DoubleAnimation Storyboard.TargetName="Rot" Storyboard.TargetProperty="Angle" To="180" Duration="0:0:0.15"/></Storyboard></BeginStoryboard>
                                             </Trigger.EnterActions>
@@ -364,6 +442,29 @@
                             </Border>
                         </Popup>
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- slim scrollbar (only shows up on small screens) -->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="MinWidth" Value="10"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Track x:Name="PART_Track" IsDirectionReversed="True">
+                        <Track.Thumb>
+                            <Thumb>
+                                <Thumb.Template>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Border CornerRadius="4" Background="#3A3447" Margin="3,2"/>
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </Track.Thumb>
+                    </Track>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

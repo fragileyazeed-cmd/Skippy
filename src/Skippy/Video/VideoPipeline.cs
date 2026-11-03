@@ -160,6 +160,9 @@ public sealed class VideoPipeline : IDisposable
     }
 
     public long FramesDropped => _encoder?.Dropped ?? 0;
+
+    /// <summary>Small BGRA thumbnail of what is being recorded right now (settings window preview).</summary>
+    public byte[]? GetPreview(out int width, out int height) => _capture.GetPreview(out width, out height);
     public long FramesCaptured => Interlocked.Read(ref _capture.FramesArrived);
 
     void Fault(string why)

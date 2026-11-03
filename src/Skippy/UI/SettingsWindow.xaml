@@ -1,7 +1,7 @@
 <Window x:Class="Skippy.UI.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Skippy" Width="840" SizeToContent="Height"
+        Title="Skippy" Width="900" SizeToContent="Height"
         WindowStyle="None" ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
         Background="{StaticResource Bg}" Foreground="{StaticResource Text}"
         FontFamily="{StaticResource UiFont}" FontSize="13"
@@ -17,57 +17,93 @@
         <Storyboard x:Key="Breathe" RepeatBehavior="Forever" AutoReverse="True">
             <DoubleAnimation Storyboard.TargetName="CaptureText" Storyboard.TargetProperty="Opacity" From="1" To="0.4" Duration="0:0:0.7"/>
         </Storyboard>
+        <!-- slow drifting colour blobs behind everything -->
+        <Storyboard x:Key="Aurora">
+            <DoubleAnimation Storyboard.TargetName="BlobAMove" Storyboard.TargetProperty="X" From="0" To="140" Duration="0:0:16" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BlobAMove" Storyboard.TargetProperty="Y" From="0" To="60" Duration="0:0:11" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BlobBMove" Storyboard.TargetProperty="X" From="0" To="-160" Duration="0:0:19" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BlobBMove" Storyboard.TargetProperty="Y" From="0" To="-70" Duration="0:0:13" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BlobCMove" Storyboard.TargetProperty="X" From="0" To="-120" Duration="0:0:23" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BlobCMove" Storyboard.TargetProperty="Y" From="0" To="90" Duration="0:0:17" AutoReverse="True" RepeatBehavior="Forever">
+                <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
     </Window.Resources>
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="58" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+        <WindowChrome CaptionHeight="60" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Grid x:Name="Root" Opacity="0">
-        <Grid.RenderTransform>
-            <TranslateTransform x:Name="RootShift" Y="12"/>
-        </Grid.RenderTransform>
+    <Grid x:Name="Root" ClipToBounds="True">
 
-        <!-- soft accent glow behind everything -->
-        <Rectangle IsHitTestVisible="False">
-            <Rectangle.Fill>
-                <RadialGradientBrush Center="0.12,0" GradientOrigin="0.12,0" RadiusX="0.75" RadiusY="0.9">
-                    <GradientStop Color="#2A2050" Offset="0"/>
-                    <GradientStop Color="#00100E16" Offset="1"/>
-                </RadialGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        <Rectangle IsHitTestVisible="False">
-            <Rectangle.Fill>
-                <RadialGradientBrush Center="1,1" GradientOrigin="1,1" RadiusX="0.6" RadiusY="0.7">
-                    <GradientStop Color="#2A1430" Offset="0"/>
-                    <GradientStop Color="#00100E16" Offset="1"/>
-                </RadialGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
+        <!-- ===== background: aurora + grain ===== -->
+        <Canvas IsHitTestVisible="False">
+            <Ellipse Width="760" Height="560" Canvas.Left="-260" Canvas.Top="-300">
+                <Ellipse.RenderTransform><TranslateTransform x:Name="BlobAMove"/></Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#665A3BFF" Offset="0"/>
+                        <GradientStop Color="#005A3BFF" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Width="720" Height="600" Canvas.Left="440" Canvas.Top="380">
+                <Ellipse.RenderTransform><TranslateTransform x:Name="BlobBMove"/></Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#4AE0458F" Offset="0"/>
+                        <GradientStop Color="#00E0458F" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Width="560" Height="460" Canvas.Left="560" Canvas.Top="-230">
+                <Ellipse.RenderTransform><TranslateTransform x:Name="BlobCMove"/></Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#3014B8A6" Offset="0"/>
+                        <GradientStop Color="#0014B8A6" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Canvas>
+        <Rectangle x:Name="Grain" IsHitTestVisible="False" Opacity="0.05"/>
 
         <DockPanel>
             <!-- ===== title bar ===== -->
-            <Grid DockPanel.Dock="Top" Height="58" Margin="20,0,8,0">
+            <Grid DockPanel.Dock="Top" Height="60" Margin="22,0,10,0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image x:Name="Logo" Width="26" Height="26" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-                <TextBlock Grid.Column="1" Text="Skippy" FontFamily="{StaticResource DisplayFont}" FontSize="17" FontWeight="SemiBold"
-                           VerticalAlignment="Center" Margin="10,0,14,1"/>
-                <Border Grid.Column="2" x:Name="StatusPill" HorizontalAlignment="Left" VerticalAlignment="Center" CornerRadius="12" Padding="10,4,12,4"
-                        Background="#14FFFFFF" BorderBrush="#1FFFFFFF" BorderThickness="1" Cursor="Hand"
-                        WindowChrome.IsHitTestVisibleInChrome="True" MouseLeftButtonUp="StatusPill_Click">
+                <Image x:Name="Logo" Width="28" Height="28" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor">
+                    <Image.Effect><DropShadowEffect Color="#8B5CFF" BlurRadius="14" ShadowDepth="0" Opacity="0.6"/></Image.Effect>
+                </Image>
+                <TextBlock Grid.Column="1" Text="Skippy" FontFamily="{StaticResource DisplayFont}" FontSize="18" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Margin="11,0,14,1"/>
+                <Border Grid.Column="2" x:Name="StatusPill" VerticalAlignment="Center" CornerRadius="12" Padding="10,4,12,4"
+                        BorderThickness="1" Cursor="Hand" WindowChrome.IsHitTestVisibleInChrome="True" MouseLeftButtonUp="StatusPill_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="{StaticResource Good}" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="StatusText" Text="Recording" FontSize="12" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <Ellipse x:Name="StatusDot" Width="8" Height="8" VerticalAlignment="Center">
+                            <Ellipse.Effect><DropShadowEffect x:Name="StatusGlow" BlurRadius="8" ShadowDepth="0" Opacity="0.9"/></Ellipse.Effect>
+                        </Ellipse>
+                        <TextBlock x:Name="StatusText" Text="Starting…" FontSize="12" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
-                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                    <TextBlock x:Name="VersionText" Text="v0.1.0" FontSize="11.5" Foreground="{StaticResource Text3}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <TextBlock x:Name="VersionText" Text="v0.0.0" FontSize="11.5" Foreground="{StaticResource Text3}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <Button x:Name="UpdateButton" Style="{StaticResource Ghost}" Padding="11,5" FontSize="12" Click="Update_Click"
                             WindowChrome.IsHitTestVisibleInChrome="True">
                         <StackPanel Orientation="Horizontal">
@@ -76,215 +112,387 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
-                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Style="{StaticResource Caption}" Content="&#xE921;" Click="Minimize_Click" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize"/>
                     <Button Style="{StaticResource Caption}" Content="&#xE8BB;" Tag="close" Click="Close_Click" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close (Skippy keeps running in the tray)"/>
                 </StackPanel>
             </Grid>
 
-            <!-- ===== content ===== -->
-            <Grid Margin="20,2,20,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="380"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                <Grid Margin="22,0,22,22">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <!-- ===== left column ===== -->
-                <StackPanel Grid.Column="0">
-
-                    <!-- hero: hotkey + buffer ring -->
-                    <Border CornerRadius="16" Padding="20,18" BorderThickness="1">
+                    <!-- ================= hero ================= -->
+                    <Border x:Name="HeroCard" CornerRadius="20" BorderThickness="1">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#261C4A" Offset="0"/>
-                                <GradientStop Color="#2A1533" Offset="1"/>
+                                <GradientStop Color="#2B1F58" Offset="0"/>
+                                <GradientStop Color="#221836" Offset="0.55"/>
+                                <GradientStop Color="#33163A" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.Background>
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#665BD0" Offset="0"/>
-                                <GradientStop Color="#8F3A69" Offset="1"/>
+                                <GradientStop Color="#7A6BE8" Offset="0"/>
+                                <GradientStop Color="#3A2E5C" Offset="0.5"/>
+                                <GradientStop Color="#B04A82" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <StackPanel>
-                                <TextBlock Text="INSTANT REPLAY" FontSize="11.5" FontWeight="SemiBold" Foreground="#B9A6FF" Margin="0,0,0,12"/>
-                                <Border x:Name="KeysArea" Background="Transparent" Cursor="Hand" MouseLeftButtonUp="KeysArea_Click" ToolTip="Click, then press a new shortcut">
-                                    <Grid MinHeight="46">
-                                        <WrapPanel x:Name="Keycaps" VerticalAlignment="Center"/>
-                                        <TextBlock x:Name="CaptureText" Text="Press a new shortcut…" FontFamily="{StaticResource DisplayFont}" FontSize="19" FontWeight="SemiBold"
-                                                   Foreground="#D8CCFF" VerticalAlignment="Center" Visibility="Collapsed"/>
-                                    </Grid>
-                                </Border>
-                                <TextBlock x:Name="HeroSub" Text="saves the last minute" Foreground="{StaticResource Text2}" FontSize="13.5" Margin="0,12,0,0"/>
-                                <TextBlock x:Name="HotkeyHint" Text="Click the keys to change the shortcut" Foreground="{StaticResource Text3}" FontSize="11.5" Margin="0,3,0,0"/>
-                            </StackPanel>
+                        <Border.Effect><DropShadowEffect Color="#5A3BFF" BlurRadius="40" ShadowDepth="0" Opacity="0.25"/></Border.Effect>
 
-                            <Grid Grid.Column="1" Width="104" Height="104" VerticalAlignment="Center" Margin="12,0,0,0">
-                                <Ellipse Stroke="#33FFFFFF" StrokeThickness="7" Margin="3.5"/>
-                                <Path x:Name="RingArc" Stroke="{StaticResource Accent}" StrokeThickness="7" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
-                                    <Path.Effect><DropShadowEffect Color="#A050FF" BlurRadius="12" ShadowDepth="0" Opacity="0.6"/></Path.Effect>
-                                </Path>
-                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock x:Name="RingText" Text="0:00" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="buffered" FontSize="10.5" Foreground="{StaticResource Text2}" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                        <Grid ClipToBounds="True">
+
+                            <Grid Margin="24,20,24,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- shortcut -->
+                                <StackPanel VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border CornerRadius="6" Padding="7,2" Background="#33A78BFA">
+                                            <TextBlock Text="INSTANT REPLAY" FontSize="10.5" FontWeight="Bold" Foreground="#D4C8FF"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <Border x:Name="KeysArea" Background="Transparent" Cursor="Hand" MouseLeftButtonUp="KeysArea_Click" ToolTip="Click, then press a new shortcut" HorizontalAlignment="Left">
+                                        <Grid MinHeight="52">
+                                            <WrapPanel x:Name="Keycaps" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="CaptureText" Text="Press a new shortcut…" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold"
+                                                       Foreground="#D8CCFF" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock x:Name="HeroSub" Text="saves the last minute" Foreground="#E2DCF2" FontSize="15" FontWeight="SemiBold" Margin="0,14,0,0"/>
+                                    <TextBlock x:Name="HotkeyHint" Text="Click the keys to change the shortcut" Foreground="{StaticResource Text3}" FontSize="11.5" Margin="0,3,0,0"/>
                                 </StackPanel>
-                            </Grid>
 
-                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" x:Name="EngineInfo" Text=" " Foreground="{StaticResource Text3}" FontSize="11.5"
-                                       Margin="0,14,0,0" TextTrimming="CharacterEllipsis"/>
+                                <!-- live stats -->
+                                <UniformGrid Grid.Column="1" Columns="2" Rows="2" VerticalAlignment="Center" Margin="18,0,22,0">
+                                    <Border Style="{StaticResource StatTile}">
+                                        <Border.Resources>
+                                            <StaticResource x:Key="CardAccent" ResourceKey="AccentAmber"/>
+                                            <SolidColorBrush x:Key="CardTint" Color="#2EF59E0B"/>
+                                            <SolidColorBrush x:Key="CardTintBorder" Color="#55F59E0B"/>
+                                        </Border.Resources>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}" Width="30" Height="30"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE7F4;"/></Border>
+                                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="100">
+                                                <TextBlock x:Name="StatRes" Text="—" FontWeight="SemiBold" FontSize="13.5"/>
+                                                <TextBlock x:Name="StatResSub" Text="screen" FontSize="11" Foreground="{StaticResource Text3}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Style="{StaticResource StatTile}">
+                                        <Border.Resources>
+                                            <StaticResource x:Key="CardAccent" ResourceKey="AccentViolet"/>
+                                            <SolidColorBrush x:Key="CardTint" Color="#2E7B5CFF"/>
+                                            <SolidColorBrush x:Key="CardTintBorder" Color="#557B5CFF"/>
+                                        </Border.Resources>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}" Width="30" Height="30"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xEC4A;"/></Border>
+                                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="100">
+                                                <TextBlock x:Name="StatFps" Text="—" FontWeight="SemiBold" FontSize="13.5"/>
+                                                <TextBlock x:Name="StatFpsSub" Text="encoder" FontSize="11" Foreground="{StaticResource Text3}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Style="{StaticResource StatTile}">
+                                        <Border.Resources>
+                                            <StaticResource x:Key="CardAccent" ResourceKey="AccentTeal"/>
+                                            <SolidColorBrush x:Key="CardTint" Color="#2E14B8A6"/>
+                                            <SolidColorBrush x:Key="CardTintBorder" Color="#5514B8A6"/>
+                                        </Border.Resources>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}" Width="30" Height="30"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE767;"/></Border>
+                                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="100">
+                                                <TextBlock x:Name="StatAudio" Text="—" FontWeight="SemiBold" FontSize="13.5"/>
+                                                <TextBlock x:Name="StatAudioSub" Text="audio" FontSize="11" Foreground="{StaticResource Text3}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Style="{StaticResource StatTile}">
+                                        <Border.Resources>
+                                            <StaticResource x:Key="CardAccent" ResourceKey="AccentPink"/>
+                                            <SolidColorBrush x:Key="CardTint" Color="#2EEC4899"/>
+                                            <SolidColorBrush x:Key="CardTintBorder" Color="#55EC4899"/>
+                                        </Border.Resources>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}" Width="30" Height="30"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE950;"/></Border>
+                                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" Width="100">
+                                                <TextBlock x:Name="StatRam" Text="—" FontWeight="SemiBold" FontSize="13.5"/>
+                                                <TextBlock x:Name="StatRamSub" Text="buffer in RAM" FontSize="11" Foreground="{StaticResource Text3}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </UniformGrid>
+
+                                <!-- buffer dial -->
+                                <Grid Grid.Column="2" Width="136" Height="136" VerticalAlignment="Center">
+                                    <Ellipse Margin="12">
+                                        <Ellipse.Fill>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="#337B5CFF" Offset="0"/>
+                                                <GradientStop Color="#00000000" Offset="1"/>
+                                            </RadialGradientBrush>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <Canvas x:Name="RingTicks" IsHitTestVisible="False"/>
+                                    <Ellipse Stroke="#2BFFFFFF" StrokeThickness="8" Margin="14"/>
+                                    <Path x:Name="RingArc" Stroke="{StaticResource Accent}" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                        <Path.Effect><DropShadowEffect Color="#A050FF" BlurRadius="14" ShadowDepth="0" Opacity="0.7"/></Path.Effect>
+                                    </Path>
+                                    <Canvas IsHitTestVisible="False">
+                                        <Ellipse x:Name="RingDot" Width="12" Height="12" Fill="White" Visibility="Collapsed">
+                                            <Ellipse.Effect><DropShadowEffect Color="#FF8AD0" BlurRadius="12" ShadowDepth="0" Opacity="1"/></Ellipse.Effect>
+                                        </Ellipse>
+                                    </Canvas>
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock x:Name="RingText" Text="0:00" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="RingSub" Text="of 1:00" FontSize="11" Foreground="{StaticResource Text2}" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Border>
 
-                    <!-- clip -->
-                    <Border Style="{StaticResource Card}" Margin="0,14,0,0">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource SectionTitle}" Text="CLIP"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="92"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="12"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Style="{StaticResource FieldLabel}" Text="Length"/>
-                                <Border Grid.Column="1" Style="{StaticResource SegmentTrack}">
-                                    <UniformGrid Rows="1">
-                                        <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len30" Content="30 s" Tag="30" Checked="Length_Checked"/>
-                                        <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len60" Content="1 min" Tag="60" Checked="Length_Checked"/>
-                                        <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len120" Content="2 min" Tag="120" Checked="Length_Checked"/>
-                                        <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len180" Content="3 min" Tag="180" Checked="Length_Checked"/>
-                                    </UniformGrid>
-                                </Border>
-                                <TextBlock Grid.Row="2" Style="{StaticResource FieldLabel}" Text="Frame rate"/>
-                                <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource SegmentTrack}">
-                                    <UniformGrid Rows="1">
-                                        <RadioButton Style="{StaticResource Segment}" GroupName="fps" x:Name="Fps30" Content="30 fps" Tag="30" Checked="Fps_Checked"/>
-                                        <RadioButton Style="{StaticResource Segment}" GroupName="fps" x:Name="Fps60" Content="60 fps" Tag="60" Checked="Fps_Checked"/>
-                                    </UniformGrid>
-                                </Border>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
+                    <!-- ================= cards ================= -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- saving -->
-                    <Border Style="{StaticResource Card}" Margin="0,14,0,0">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource SectionTitle}" Text="SAVING"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource Control}" BorderBrush="{StaticResource Stroke}" BorderThickness="1">
-                                    <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFont}" FontSize="16" Foreground="#B9A6FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,10,0">
-                                    <TextBlock x:Name="FolderName" Text="Skippy" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock x:Name="FolderPath" Text="" FontSize="11.5" Foreground="{StaticResource Text3}" TextTrimming="CharacterEllipsis"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource Ghost}" Content="Change" Click="ChangeFolder_Click" Margin="0,0,6,0"/>
-                                    <Button Style="{StaticResource Ghost}" Click="OpenFolder_Click">
+                        <StackPanel Grid.Column="0">
+                            <!-- ===== clip (violet) ===== -->
+                            <Border x:Name="ClipCard" Style="{StaticResource Card}">
+                                <Border.Resources>
+                                    <StaticResource x:Key="CardAccent" ResourceKey="AccentViolet"/>
+                                    <Color x:Key="CardGlow">#8B5CFF</Color>
+                                    <SolidColorBrush x:Key="CardTint" Color="#267B5CFF"/>
+                                    <SolidColorBrush x:Key="CardTintBorder" Color="#557B5CFF"/>
+                                </Border.Resources>
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,14">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="&#xE8A7;" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center" Margin="0,0,7,0"/>
-                                            <TextBlock Text="Open folder"/>
+                                            <Border Style="{StaticResource Badge}"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE7C8;"/></Border>
+                                            <TextBlock Style="{StaticResource CardTitle}" Text="CLIP"/>
                                         </StackPanel>
-                                    </Button>
+                                        <TextBlock Style="{StaticResource CardHint}" Text="H.264 · AAC · MP4"/>
+                                    </Grid>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="88"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Style="{StaticResource FieldLabel}" Text="Length"/>
+                                        <Border Grid.Column="1" Style="{StaticResource SegmentTrack}">
+                                            <UniformGrid Rows="1">
+                                                <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len30" Content="30 s" Tag="30" Checked="Length_Checked"/>
+                                                <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len60" Content="1 min" Tag="60" Checked="Length_Checked"/>
+                                                <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len120" Content="2 min" Tag="120" Checked="Length_Checked"/>
+                                                <RadioButton Style="{StaticResource Segment}" GroupName="len" x:Name="Len180" Content="3 min" Tag="180" Checked="Length_Checked"/>
+                                            </UniformGrid>
+                                        </Border>
+                                        <TextBlock Grid.Row="2" Style="{StaticResource FieldLabel}" Text="Frame rate"/>
+                                        <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource SegmentTrack}">
+                                            <UniformGrid Rows="1">
+                                                <RadioButton Style="{StaticResource Segment}" GroupName="fps" x:Name="Fps30" Content="30 fps" Tag="30" Checked="Fps_Checked"/>
+                                                <RadioButton Style="{StaticResource Segment}" GroupName="fps" x:Name="Fps60" Content="60 fps" Tag="60" Checked="Fps_Checked"/>
+                                            </UniformGrid>
+                                        </Border>
+                                    </Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                        <Border Style="{StaticResource Chip}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="&#xE74E;" FontFamily="{StaticResource IconFont}" FontSize="11" Foreground="#C4B5FD" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                <TextBlock x:Name="ClipSizeText" Text="up to — per clip" FontSize="11.5" Foreground="#D9D0FF"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource Chip}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="&#xE950;" FontFamily="{StaticResource IconFont}" FontSize="11" Foreground="#C4B5FD" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                <TextBlock x:Name="ClipRamText" Text="up to — RAM" FontSize="11.5" Foreground="#D9D0FF"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
                                 </StackPanel>
-                            </Grid>
-                            <Border Height="1" Background="{StaticResource Stroke}" Margin="0,14,0,12"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Last clip" Foreground="{StaticResource Text3}" FontSize="12" Margin="0,0,10,0"/>
-                                <TextBlock Grid.Column="1" x:Name="LastClip" Text="none yet" FontSize="12" Foreground="{StaticResource Text2}" TextTrimming="CharacterEllipsis"/>
-                                <Button Grid.Column="2" x:Name="ShowClip" Style="{StaticResource Link}" Content="Show" Click="ShowClip_Click" Margin="10,0,0,0" Visibility="Collapsed"/>
-                            </Grid>
-                            <Border Height="1" Background="{StaticResource Stroke}" Margin="0,12,0,12"/>
-                            <CheckBox x:Name="AutostartSwitch" Style="{StaticResource Switch}" Checked="Autostart_Changed" Unchecked="Autostart_Changed">
+                            </Border>
+
+                            <!-- ===== audio (teal) ===== -->
+                            <Border x:Name="AudioCard" Style="{StaticResource Card}" Margin="0,16,0,0">
+                                <Border.Resources>
+                                    <StaticResource x:Key="CardAccent" ResourceKey="AccentTeal"/>
+                                    <Color x:Key="CardGlow">#22D3EE</Color>
+                                    <SolidColorBrush x:Key="CardTint" Color="#2614B8A6"/>
+                                    <SolidColorBrush x:Key="CardTintBorder" Color="#5514B8A6"/>
+                                </Border.Resources>
                                 <StackPanel>
-                                    <TextBlock Text="Start with Windows" FontSize="13"/>
-                                    <TextBlock Text="Buffering starts as soon as you sign in" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
+                                    <Grid Margin="0,0,0,14">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE767;"/></Border>
+                                            <TextBlock Style="{StaticResource CardTitle}" Text="AUDIO"/>
+                                        </StackPanel>
+                                        <TextBlock Style="{StaticResource CardHint}" Text="mixed into one track · 192 kbps"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,7">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE720;" FontFamily="{StaticResource IconFont}" FontSize="13" Foreground="#5EEAD4" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <TextBlock Style="{StaticResource FieldLabel}" Text="Microphone"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="MicState" HorizontalAlignment="Right" FontSize="11.5" Foreground="{StaticResource Text3}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <ComboBox x:Name="MicBox" Style="{StaticResource Combo}" SelectionChanged="Mic_Changed" DropDownOpened="Audio_DropDownOpened"/>
+                                    <UniformGrid x:Name="MicLeds" Rows="1" Height="6" Margin="2,9,2,0"/>
+
+                                    <Grid Margin="0,18,0,7">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE7F6;" FontFamily="{StaticResource IconFont}" FontSize="13" Foreground="#5EEAD4" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <TextBlock Style="{StaticResource FieldLabel}" Text="Headset / game audio"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="OutState" HorizontalAlignment="Right" FontSize="11.5" Foreground="{StaticResource Text3}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <ComboBox x:Name="OutBox" Style="{StaticResource Combo}" SelectionChanged="Out_Changed" DropDownOpened="Audio_DropDownOpened"/>
+                                    <UniformGrid x:Name="OutLeds" Rows="1" Height="6" Margin="2,9,2,0"/>
+
+                                    <Border Height="1" Background="{StaticResource Stroke}" Margin="0,18,0,14"/>
+                                    <CheckBox x:Name="SoundSwitch" Style="{StaticResource Switch}" Checked="Sound_Changed" Unchecked="Sound_Changed">
+                                        <StackPanel>
+                                            <TextBlock Text="Play a sound when a clip is saved" FontSize="13"/>
+                                            <TextBlock Text="A short chime once the file is written" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </CheckBox>
                                 </StackPanel>
-                            </CheckBox>
+                            </Border>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
 
-                <!-- ===== right column ===== -->
-                <StackPanel Grid.Column="2">
-
-                    <!-- audio -->
-                    <Border Style="{StaticResource Card}">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource SectionTitle}" Text="AUDIO"/>
-
-                            <Grid Margin="0,0,0,7">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#xE720;" FontFamily="{StaticResource IconFont}" FontSize="13" Foreground="{StaticResource Text2}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <TextBlock Style="{StaticResource FieldLabel}" Text="Microphone"/>
-                                </StackPanel>
-                                <TextBlock x:Name="MicState" HorizontalAlignment="Right" FontSize="11.5" Foreground="{StaticResource Text3}" VerticalAlignment="Center"/>
-                            </Grid>
-                            <ComboBox x:Name="MicBox" Style="{StaticResource Combo}" SelectionChanged="Mic_Changed" DropDownOpened="Audio_DropDownOpened"/>
-                            <Border Height="4" CornerRadius="2" Background="#241F2C" Margin="2,8,2,0" x:Name="MicTrack">
-                                <Border x:Name="MicMeter" HorizontalAlignment="Left" Width="0" CornerRadius="2" Background="{StaticResource AccentH}"/>
-                            </Border>
-
-                            <Grid Margin="0,18,0,7">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#xE7F6;" FontFamily="{StaticResource IconFont}" FontSize="13" Foreground="{StaticResource Text2}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <TextBlock Style="{StaticResource FieldLabel}" Text="Headset / game audio"/>
-                                </StackPanel>
-                                <TextBlock x:Name="OutState" HorizontalAlignment="Right" FontSize="11.5" Foreground="{StaticResource Text3}" VerticalAlignment="Center"/>
-                            </Grid>
-                            <ComboBox x:Name="OutBox" Style="{StaticResource Combo}" SelectionChanged="Out_Changed" DropDownOpened="Audio_DropDownOpened"/>
-                            <Border Height="4" CornerRadius="2" Background="#241F2C" Margin="2,8,2,0" x:Name="OutTrack">
-                                <Border x:Name="OutMeter" HorizontalAlignment="Left" Width="0" CornerRadius="2" Background="{StaticResource AccentH}"/>
-                            </Border>
-
-                            <Border Height="1" Background="{StaticResource Stroke}" Margin="0,18,0,14"/>
-                            <CheckBox x:Name="SoundSwitch" Style="{StaticResource Switch}" Checked="Sound_Changed" Unchecked="Sound_Changed">
+                        <StackPanel Grid.Column="2">
+                            <!-- ===== screen (amber) ===== -->
+                            <Border x:Name="ScreenCard" Style="{StaticResource Card}">
+                                <Border.Resources>
+                                    <StaticResource x:Key="CardAccent" ResourceKey="AccentAmber"/>
+                                    <Color x:Key="CardGlow">#F59E0B</Color>
+                                    <SolidColorBrush x:Key="CardTint" Color="#26F59E0B"/>
+                                    <SolidColorBrush x:Key="CardTintBorder" Color="#55F59E0B"/>
+                                </Border.Resources>
                                 <StackPanel>
-                                    <TextBlock Text="Play a sound when a clip is saved" FontSize="13"/>
-                                    <TextBlock Text="A short chime once the file is written" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
+                                    <Grid Margin="0,0,0,14">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE7F4;"/></Border>
+                                            <TextBlock Style="{StaticResource CardTitle}" Text="SCREEN"/>
+                                        </StackPanel>
+                                        <TextBlock Style="{StaticResource CardHint}" Text="click a screen to record it"/>
+                                    </Grid>
+                                    <Border CornerRadius="12" Background="#0C0A10" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Height="176" x:Name="MapFrame">
+                                        <Canvas x:Name="MonitorMap" ClipToBounds="True"/>
+                                    </Border>
+                                    <TextBlock x:Name="MonitorInfo" Margin="2,11,0,0" FontSize="12.5" Foreground="{StaticResource Text2}"/>
                                 </StackPanel>
-                            </CheckBox>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- screen -->
-                    <Border Style="{StaticResource Card}" Margin="0,14,0,0">
-                        <StackPanel>
-                            <Grid>
-                                <TextBlock Style="{StaticResource SectionTitle}" Text="SCREEN"/>
-                                <TextBlock Text="click a screen to record it" HorizontalAlignment="Right" FontSize="11.5" Foreground="{StaticResource Text3}"/>
-                            </Grid>
-                            <Border CornerRadius="10" Background="#120F17" BorderBrush="{StaticResource Stroke}" BorderThickness="1" Height="132" x:Name="MapFrame">
-                                <Canvas x:Name="MonitorMap" ClipToBounds="True"/>
                             </Border>
-                            <TextBlock x:Name="MonitorInfo" Margin="2,10,0,0" FontSize="12.5" Foreground="{StaticResource Text2}"/>
+
+                            <!-- ===== saving (pink) ===== -->
+                            <Border x:Name="SaveCard" Style="{StaticResource Card}" Margin="0,16,0,0">
+                                <Border.Resources>
+                                    <StaticResource x:Key="CardAccent" ResourceKey="AccentPink"/>
+                                    <Color x:Key="CardGlow">#EC4899</Color>
+                                    <SolidColorBrush x:Key="CardTint" Color="#26EC4899"/>
+                                    <SolidColorBrush x:Key="CardTintBorder" Color="#55EC4899"/>
+                                </Border.Resources>
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,14">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Badge}"><TextBlock Style="{StaticResource BadgeGlyph}" Text="&#xE74E;"/></Border>
+                                            <TextBlock Style="{StaticResource CardTitle}" Text="SAVING"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Width="38" Height="38" CornerRadius="10" Background="{DynamicResource CardTint}" BorderBrush="{DynamicResource CardTintBorder}" BorderThickness="1">
+                                            <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFont}" FontSize="16" Foreground="{DynamicResource CardAccent}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,10,0">
+                                            <TextBlock x:Name="FolderName" Text="Skippy" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock x:Name="FolderPath" Text="" FontSize="11.5" Foreground="{StaticResource Text3}" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Style="{StaticResource Ghost}" Content="Change" Click="ChangeFolder_Click" Margin="0,0,6,0"/>
+                                            <Button Style="{StaticResource Ghost}" Click="OpenFolder_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="&#xE8A7;" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                                                    <TextBlock Text="Open"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- last clip -->
+                                    <Border CornerRadius="12" Background="#0FFFFFFF" BorderBrush="#14FFFFFF" BorderThickness="1" Padding="10" Margin="0,14,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid x:Name="ThumbArea" Width="112" Height="63" Cursor="Hand" MouseLeftButtonUp="PlayClip_Click">
+                                                <Border x:Name="ClipThumb" CornerRadius="8" Background="#1C1824" BorderBrush="#22FFFFFF" BorderThickness="1">
+                                                    <TextBlock x:Name="ThumbPlaceholder" Text="&#xE714;" FontFamily="{StaticResource IconFont}" FontSize="20" Foreground="#4A4458"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border x:Name="PlayOverlay" Width="30" Height="30" CornerRadius="15" Background="#CC0F0D14" Opacity="0"
+                                                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock Text="&#xE768;" FontFamily="{StaticResource IconFont}" FontSize="12" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                                </Border>
+                                                <Border x:Name="DurationBadge" CornerRadius="5" Background="#CC000000" Padding="5,1" Margin="0,0,5,5"
+                                                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed">
+                                                    <TextBlock x:Name="DurationText" FontSize="10" FontWeight="SemiBold" Foreground="White"/>
+                                                </Border>
+                                            </Grid>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,8,0">
+                                                <TextBlock Text="LAST CLIP" FontSize="10" FontWeight="Bold" Foreground="#F9A8D4"/>
+                                                <TextBlock x:Name="LastClip" Text="none yet" FontSize="12.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
+                                                <TextBlock x:Name="LastClipMeta" Text="press the shortcut in a game" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center" x:Name="ClipButtons" Visibility="Collapsed">
+                                                <Button Style="{StaticResource AccentButton}" Padding="12,6" Click="PlayClip_Click">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="&#xE768;" FontFamily="{StaticResource IconFont}" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                        <TextBlock Text="Play"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button x:Name="ShowClip" Style="{StaticResource Link}" Content="Show in folder" Click="ShowClip_Click" HorizontalAlignment="Center" Margin="0,7,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Height="1" Background="{StaticResource Stroke}" Margin="0,14,0,12"/>
+                                    <CheckBox x:Name="AutostartSwitch" Style="{StaticResource Switch}" Checked="Autostart_Changed" Unchecked="Autostart_Changed">
+                                        <StackPanel>
+                                            <TextBlock Text="Start with Windows" FontSize="13"/>
+                                            <TextBlock Text="Buffering starts as soon as you sign in" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </CheckBox>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
-            </Grid>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
         </DockPanel>
     </Grid>
 </Window>

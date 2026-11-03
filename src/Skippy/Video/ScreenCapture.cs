@@ -118,6 +118,75 @@ public sealed unsafe class ScreenCapture : IDisposable
         }
     }
 
+    // ---------- small preview for the settings window ----------
+
+    ID3D11Texture2D? _mipTex, _previewStaging;
+    ID3D11ShaderResourceView? _mipSrv;
+    int _mipLevel, _pvW, _pvH, _mipW, _mipH;
+
+    /// <summary>
+    /// A ~320 px wide BGRA thumbnail of the latest frame. The GPU shrinks it (mipmaps, proper filtering), so
+    /// only a few hundred KB are read back. Called a few times a second, and only while the window is open.
+    /// </summary>
+    public byte[]? GetPreview(out int width, out int height)
+    {
+        width = height = 0;
+        lock (_gpu.Lock)
+        {
+            if (_disposed || Latest == null) return null;
+            if (_mipTex == null || _mipW != Width || _mipH != Height)
+            {
+                ReleasePreview();
+                int level = 0;
+                while ((Width >> level) > 400) level++;
+                _mipLevel = level;
+                _mipW = Width; _mipH = Height;
+                _pvW = Math.Max(1, Width >> level);
+                _pvH = Math.Max(1, Height >> level);
+                _mipTex = _gpu.Device.CreateTexture2D(new Texture2DDescription
+                {
+                    Width = (uint)Width, Height = (uint)Height, MipLevels = (uint)(level + 1), ArraySize = 1,
+                    Format = Format.B8G8R8A8_UNorm, SampleDescription = new SampleDescription(1, 0), Usage = ResourceUsage.Default,
+                    BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource, MiscFlags = ResourceOptionFlags.GenerateMips,
+                });
+                _mipSrv = _gpu.Device.CreateShaderResourceView(_mipTex);
+                _previewStaging = _gpu.Device.CreateTexture2D(new Texture2DDescription
+                {
+                    Width = (uint)_pvW, Height = (uint)_pvH, MipLevels = 1, ArraySize = 1, Format = Format.B8G8R8A8_UNorm,
+                    SampleDescription = new SampleDescription(1, 0), Usage = ResourceUsage.Staging, CPUAccessFlags = CpuAccessFlags.Read,
+                });
+            }
+
+            var ctx = _gpu.Context;
+            ctx.CopySubresourceRegion(_mipTex, 0, 0, 0, 0, Latest, 0, null);
+            ctx.GenerateMips(_mipSrv!);
+            ctx.CopySubresourceRegion(_previewStaging!, 0, 0, 0, 0, _mipTex, (uint)_mipLevel, null);
+            var map = ctx.Map(_previewStaging!, 0, MapMode.Read, Vortice.Direct3D11.MapFlags.None);
+            var px = new byte[_pvW * _pvH * 4];
+            try
+            {
+                unsafe
+                {
+                    byte* src = (byte*)map.DataPointer;
+                    fixed (byte* dst = px)
+                        for (int y = 0; y < _pvH; y++)
+                            Buffer.MemoryCopy(src + y * map.RowPitch, dst + y * _pvW * 4, _pvW * 4, _pvW * 4);
+                }
+            }
+            finally { ctx.Unmap(_previewStaging!, 0); }
+            width = _pvW;
+            height = _pvH;
+            return px;
+        }
+    }
+
+    void ReleasePreview()
+    {
+        _mipSrv?.Dispose(); _mipSrv = null;
+        _mipTex?.Dispose(); _mipTex = null;
+        _previewStaging?.Dispose(); _previewStaging = null;
+    }
+
     public void Dispose()
     {
         if (_disposed) return;
@@ -127,6 +196,7 @@ public sealed unsafe class ScreenCapture : IDisposable
         try { _pool.Dispose(); } catch { }
         lock (_gpu.Lock)
         {
+            ReleasePreview();
             Latest?.Dispose();
             Latest = null;
         }

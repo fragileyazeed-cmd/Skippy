@@ -91,6 +91,13 @@ public sealed class AudioPipeline : IDisposable
         return s.Source == null || s.Source.Failed ? -1 : p;
     }
 
+    /// <summary>True while that source has a working device (does not consume meter peaks).</summary>
+    public bool IsRecording(bool mic)
+    {
+        var s = mic ? _mic : _out;
+        return s.Setting != AudioDevices.None && s.Source is { Failed: false };
+    }
+
     public string Describe(bool mic)
     {
         var s = mic ? _mic : _out;

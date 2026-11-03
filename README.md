@@ -23,6 +23,8 @@ touches the disk until you save.
    - **Shortcut**: click the keycaps and press a new combo
    - **Save folder**, and a link to the last clip
    - Click the **Recording** pill in the title bar to pause/resume
+   - Live view while the window is open: buffer dial, resolution / encoder / audio / RAM tiles, LED audio
+     meters, a small preview of the screen being recorded, and the last clip with its thumbnail
 4. Tray menu: Settings / Pause / Resume / Open folder / Exit.
 
 Video is 1080p (the short side is capped at 1080 px; e.g. a 1440p monitor is scaled to 1920×1080),
