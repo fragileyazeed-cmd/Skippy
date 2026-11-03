@@ -9,7 +9,9 @@
 #>
 param([string]$Notes = "")
 
-$ErrorActionPreference = 'Stop'
+# Native tools (git, gh) print progress on stderr; Windows PowerShell 5.1 would treat that as fatal with
+# 'Stop', so failures are detected through $LASTEXITCODE instead.
+$ErrorActionPreference = 'Continue'
 $root = Split-Path $PSScriptRoot -Parent
 $proj = Join-Path $root 'src\Skippy\Skippy.csproj'
 $gh = (Get-Command gh -ErrorAction SilentlyContinue).Source
@@ -20,7 +22,7 @@ if (-not $git) { $git = 'C:\Program Files\Git\cmd\git.exe' }
 $version = ([xml](Get-Content $proj)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
 $tag = "v$version"
 if (& $git -C $root status --porcelain) { throw "Commit your changes first (git status is not clean)." }
-& $gh release view $tag 2>$null | Out-Null
+& $gh release view $tag *> $null
 if ($LASTEXITCODE -eq 0) { throw "Release $tag already exists. Bump <Version> in Skippy.csproj first." }
 
 $out = Join-Path $root "dist\Skippy-$version"
@@ -35,7 +37,8 @@ Compress-Archive -Path "$out\*" -DestinationPath $zip
 Write-Host ("Zipped {0:N1} MB -> {1}" -f ((Get-Item $zip).Length / 1MB), $zip)
 
 & $git -C $root tag $tag
-& $git -C $root push origin main $tag
+& $git -C $root push origin main $tag 2>&1 | ForEach-Object { "$_" }
+if ($LASTEXITCODE -ne 0) { throw "git push failed." }
 if (-not $Notes) { $Notes = "Skippy $version" }
 & $gh release create $tag $zip --title "Skippy $version" --notes $Notes
 if ($LASTEXITCODE -ne 0) { throw "gh release create failed." }
