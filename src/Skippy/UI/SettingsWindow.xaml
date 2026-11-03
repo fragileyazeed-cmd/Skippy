@@ -468,17 +468,27 @@
                                                 <TextBlock x:Name="LastClip" Text="none yet" FontSize="12.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
                                                 <TextBlock x:Name="LastClipMeta" Text="press the shortcut in a game" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
                                             </StackPanel>
-                                            <StackPanel Grid.Column="2" VerticalAlignment="Center" x:Name="ClipButtons" Visibility="Collapsed">
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center" x:Name="ClipButtons" Visibility="Collapsed" Width="84">
                                                 <Button Style="{StaticResource AccentButton}" Padding="12,6" Click="PlayClip_Click">
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="&#xE768;" FontFamily="{StaticResource IconFont}" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
                                                         <TextBlock Text="Play"/>
                                                     </StackPanel>
                                                 </Button>
-                                                <Button x:Name="ShowClip" Style="{StaticResource Link}" Content="Show in folder" Click="ShowClip_Click" HorizontalAlignment="Center" Margin="0,7,0,0"/>
+                                                <Button Style="{StaticResource Ghost}" Padding="12,6" Margin="0,6,0,0" Click="TrimClip_Click" ToolTip="Cut a piece out of this clip">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="&#xE8C6;" FontFamily="{StaticResource IconFont}" FontSize="11" Foreground="#F9A8D4" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                        <TextBlock Text="Trim"/>
+                                                    </StackPanel>
+                                                </Button>
                                             </StackPanel>
                                         </Grid>
                                     </Border>
+                                    <Grid Margin="2,9,2,0">
+                                        <Button x:Name="ShowClip" Style="{StaticResource Link}" Content="Show in folder" Click="ShowClip_Click" HorizontalAlignment="Left" Visibility="Collapsed"/>
+                                        <Button Style="{StaticResource Link}" Content="✂  Trim another clip…" Click="TrimOther_Click" HorizontalAlignment="Right"
+                                                ToolTip="Pick any clip from your Skippy folder to trim"/>
+                                    </Grid>
 
                                     <Border Height="1" Background="{StaticResource Stroke}" Margin="0,14,0,12"/>
                                     <CheckBox x:Name="AutostartSwitch" Style="{StaticResource Switch}" Checked="Autostart_Changed" Unchecked="Autostart_Changed">

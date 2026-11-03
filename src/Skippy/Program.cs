@@ -30,6 +30,15 @@ static class Program
                 File.WriteAllText(Path.Combine(Log.Dir, "selftest.txt"), rep.ToString());
                 return rc;
             }
+            if (args.Contains("--selftest-trim"))
+            {
+                var rep = new System.Text.StringBuilder();
+                int rc;
+                try { rc = TrimTest.Run(args, rep); }
+                catch (Exception ex) { rep.AppendLine($"RESULT: FAIL {ex}"); rc = 1; }
+                File.WriteAllText(Path.Combine(Log.Dir, "selftest.txt"), rep.ToString());
+                return rc;
+            }
             if (args.Length > 0 && args[0] == "--soak")
                 return SelfTest.Soak(args);
             if (args.Length == 3 && args[0] == "--analyze-audio")
@@ -65,6 +74,14 @@ static class Program
                 else AppIcon.WriteIco(args[1]);
                 return 0;
             }
+            if (args.Length == 2 && args[0] == "--preview-trim")
+            {
+                // dev aid: just the trim window, next to a running Skippy
+                var preview = CreateApp(System.Windows.ShutdownMode.OnLastWindowClose);
+                preview.Startup += (_, _) => TrimWindow.Open(Settings.Load(), args[1]);
+                preview.Run();
+                return 0;
+            }
             if (Updater.IsApplyMode(args)) return Updater.Apply(args);   // runs from the downloaded update, before the single-instance check
             Updater.CleanUp();
 
@@ -81,12 +98,7 @@ static class Program
             bool firstRun = !File.Exists(Path.Combine(Log.Dir, "settings.json"));
             var settings = Settings.Load();
             // WPF runs the message loop (settings window); the WinForms tray icon and hotkey window live on it too
-            var app = new System.Windows.Application { ShutdownMode = System.Windows.ShutdownMode.OnExplicitShutdown };
-            app.Resources.MergedDictionaries.Add(new System.Windows.ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/Skippy;component/UI/Theme.xaml", UriKind.Absolute),
-            });
-            app.DispatcherUnhandledException += (_, e) => { Log.Error("UI exception", e.Exception); e.Handled = true; };
+            var app = CreateApp(System.Windows.ShutdownMode.OnExplicitShutdown);
 
             // launched by hand (not at login): show the window so people see it started; at login stay in the tray
             var tray = new TrayApp(settings, showSettingsNow: firstRun || !args.Contains(Autostart.Arg));
@@ -99,6 +111,17 @@ static class Program
         {
             MediaFactory.MFShutdown();
         }
+    }
+
+    static System.Windows.Application CreateApp(System.Windows.ShutdownMode mode)
+    {
+        var app = new System.Windows.Application { ShutdownMode = mode };
+        app.Resources.MergedDictionaries.Add(new System.Windows.ResourceDictionary
+        {
+            Source = new Uri("pack://application:,,,/Skippy;component/UI/Theme.xaml", UriKind.Absolute),
+        });
+        app.DispatcherUnhandledException += (_, e) => { Log.Error("UI exception", e.Exception); e.Handled = true; };
+        return app;
     }
 
     static readonly DateTime Started = DateTime.Now;

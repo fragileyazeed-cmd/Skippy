@@ -37,6 +37,7 @@ public sealed class TrayApp : IDisposable
         _resumeItem.Enabled = false;
         menu.Items.Add(_pauseItem);
         menu.Items.Add(_resumeItem);
+        menu.Items.Add(TrayMenu.Item("Trim a clip…", (_, _) => TrimWindow.PickAndOpen(_settings, null)));
         menu.Items.Add(TrayMenu.Item("Open folder", (_, _) => Folders.Open(_settings.SaveFolder)));
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(TrayMenu.Item("Exit", (_, _) => ExitRequested?.Invoke()));

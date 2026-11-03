@@ -1,0 +1,436 @@
+<Window x:Class="Skippy.UI.TrimWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Skippy · Trim" Width="1060" Height="800" MinWidth="780" MinHeight="620"
+        WindowStyle="None" ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Bg}" Foreground="{StaticResource Text}"
+        FontFamily="{StaticResource UiFont}" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Ideal">
+
+    <Window.Resources>
+        <!-- this window is the pink "saving" family -->
+        <StaticResource x:Key="CardAccent" ResourceKey="AccentPink"/>
+        <Color x:Key="CardGlow">#EC4899</Color>
+        <SolidColorBrush x:Key="CardTint" Color="#26EC4899"/>
+        <SolidColorBrush x:Key="CardTintBorder" Color="#55EC4899"/>
+
+        <LinearGradientBrush x:Key="Selection" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#A855F7" Offset="0"/>
+            <GradientStop Color="#EC4899" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- round icon buttons of the transport row -->
+        <Style x:Key="RoundButton" TargetType="Button">
+            <Setter Property="Width" Value="38"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="B" CornerRadius="19" Background="{StaticResource Control}" BorderBrush="{StaticResource Stroke}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="B" Property="Background" Value="{StaticResource ControlHover}"/>
+                                <Setter TargetName="B" Property="BorderBrush" Value="{StaticResource StrokeHi}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="B" Property="Background" Value="{StaticResource ControlPressed}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PlayButton" TargetType="Button">
+            <Setter Property="Width" Value="52"/>
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse Fill="{StaticResource Selection}">
+                                <Ellipse.Effect><DropShadowEffect Color="#EC4899" BlurRadius="20" ShadowDepth="0" Opacity="0.55"/></Ellipse.Effect>
+                            </Ellipse>
+                            <Ellipse x:Name="Shine" Fill="White" Opacity="0"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Shine" Property="Opacity" Value="0.12"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Shine" Property="Opacity" Value="0.22"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- icon toggles (loop, mute) -->
+        <Style x:Key="IconToggle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource Text2}"/>
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="B" Height="34" MinWidth="34" Padding="10,0" CornerRadius="9" Background="{StaticResource Control}" BorderBrush="{StaticResource Stroke}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="B" Property="BorderBrush" Value="{StaticResource StrokeHi}"/>
+                                <Setter Property="Foreground" Value="{StaticResource Text}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="B" Property="Background" Value="#33EC4899"/>
+                                <Setter TargetName="B" Property="BorderBrush" Value="#88EC4899"/>
+                                <Setter Property="Foreground" Value="#FBCFE8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- in / out time fields -->
+        <Style x:Key="TimeBox" TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="CaretBrush" Value="#F9A8D4"/>
+            <Setter Property="SelectionBrush" Value="#EC4899"/>
+            <Setter Property="FontFamily" Value="{StaticResource DisplayFont}"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Width" Value="104"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="B" CornerRadius="9" Background="#14FFFFFF" BorderBrush="#22FFFFFF" BorderThickness="1" Padding="6,5">
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="B" Property="BorderBrush" Value="#44FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="B" Property="BorderBrush" Value="#EC4899"/>
+                                <Setter TargetName="B" Property="Background" Value="#22EC4899"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Kbd" TargetType="Border">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="#1AFFFFFF"/>
+            <Setter Property="BorderBrush" Value="#26FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="Margin" Value="0,0,5,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid x:Name="Root" ClipToBounds="True">
+        <!-- soft colour behind everything -->
+        <Canvas IsHitTestVisible="False">
+            <Ellipse Width="820" Height="560" Canvas.Left="-300" Canvas.Top="-320">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#55A855F7" Offset="0"/>
+                        <GradientStop Color="#00A855F7" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Width="900" Height="620" Canvas.Left="520" Canvas.Top="420">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#40EC4899" Offset="0"/>
+                        <GradientStop Color="#00EC4899" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Canvas>
+        <Rectangle x:Name="Grain" IsHitTestVisible="False" Opacity="0.05"/>
+
+        <DockPanel>
+            <!-- ===== title bar ===== -->
+            <Grid DockPanel.Dock="Top" Height="56" Margin="20,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Border Width="30" Height="30" CornerRadius="9" Background="{StaticResource Selection}" VerticalAlignment="Center">
+                    <Border.Effect><DropShadowEffect Color="#EC4899" BlurRadius="16" ShadowDepth="0" Opacity="0.55"/></Border.Effect>
+                    <TextBlock Text="&#xE8C6;" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,12,1">
+                    <TextBlock Text="Trim" FontFamily="{StaticResource DisplayFont}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="·" Foreground="{StaticResource Text3}" FontSize="16" Margin="10,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="FileTitle" Foreground="{StaticResource Text2}" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+                <Button Grid.Column="2" Style="{StaticResource Ghost}" Padding="11,6" FontSize="12" Click="OpenOther_Click" Margin="0,0,10,0"
+                        VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Open another clip from your Skippy folder">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE838;" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                        <TextBlock Text="Open clip…"/>
+                    </StackPanel>
+                </Button>
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Style="{StaticResource Caption}" Content="&#xE921;" Click="Minimize_Click" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize"/>
+                    <Button x:Name="MaxButton" Style="{StaticResource Caption}" Content="&#xE922;" Click="Maximize_Click" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize"/>
+                    <Button Style="{StaticResource Caption}" Content="&#xE8BB;" Tag="close" Click="Close_Click" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== editing panel ===== -->
+            <Border x:Name="Panel" DockPanel.Dock="Bottom" Style="{StaticResource Card}" Margin="20,14,20,20" Padding="20,16,20,18">
+                <StackPanel>
+                    <!-- transport -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock x:Name="NowText" Text="0:00.00" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="SemiBold" VerticalAlignment="Bottom"/>
+                            <TextBlock x:Name="TotalText" Text=" / 0:00.00" FontFamily="{StaticResource DisplayFont}" FontSize="14" Foreground="{StaticResource Text3}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Style="{StaticResource RoundButton}" Content="&#xE892;" Click="GoIn_Click" ToolTip="Jump to the start of the cut (Home)"/>
+                            <Button Style="{StaticResource RoundButton}" Content="&#xE76B;" Click="StepBack_Click" Margin="8,0,0,0" ToolTip="One frame back (←, Shift+← = 1 second)"/>
+                            <Button x:Name="PlayBtn" Style="{StaticResource PlayButton}" Click="Play_Click" Margin="14,0" ToolTip="Play / pause (Space)">
+                                <TextBlock x:Name="PlayGlyph" Text="&#xE768;" Margin="3,0,0,0"/>
+                            </Button>
+                            <Button Style="{StaticResource RoundButton}" Content="&#xE76C;" Click="StepForward_Click" Margin="0,0,8,0" ToolTip="One frame forward (→, Shift+→ = 1 second)"/>
+                            <Button Style="{StaticResource RoundButton}" Content="&#xE893;" Click="GoOut_Click" ToolTip="Jump to the end of the cut (End)"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <CheckBox x:Name="LoopToggle" Style="{StaticResource IconToggle}" ToolTip="Loop the cut while playing (L)">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8EE;" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Loop" FontFamily="{StaticResource UiFont}" FontSize="12" Margin="7,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox x:Name="MuteToggle" Style="{StaticResource IconToggle}" Margin="8,0,0,0" Checked="Mute_Changed" Unchecked="Mute_Changed" ToolTip="Mute (M)">
+                                <TextBlock x:Name="MuteGlyph" Text="&#xE767;"/>
+                            </CheckBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- timeline: ruler, filmstrip, selection, handles, playhead -->
+                    <Grid x:Name="TimelineHost" Height="104" Margin="0,14,0,0" Cursor="Hand" Background="Transparent">
+                        <Canvas x:Name="Ruler" Height="18" VerticalAlignment="Top" Margin="12,0" IsHitTestVisible="False"/>
+                        <Border x:Name="StripFrame" Margin="12,22,12,10" CornerRadius="10" Background="#1C1824" BorderBrush="#22FFFFFF" BorderThickness="1" ClipToBounds="True">
+                            <Grid>
+                                <UniformGrid x:Name="Strip" Rows="1"/>
+                                <TextBlock x:Name="StripLoading" Text="loading frames…" FontSize="11.5" Foreground="{StaticResource Text3}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <Canvas x:Name="Track" Margin="12,0">
+                            <Rectangle x:Name="DimLeft" Fill="#C80F0D14" IsHitTestVisible="False"/>
+                            <Rectangle x:Name="DimRight" Fill="#C80F0D14" IsHitTestVisible="False"/>
+                            <Border x:Name="SelFrame" BorderBrush="{StaticResource Selection}" BorderThickness="0,3,0,3" IsHitTestVisible="False">
+                                <Border.Effect><DropShadowEffect Color="#EC4899" BlurRadius="14" ShadowDepth="0" Opacity="0.45"/></Border.Effect>
+                            </Border>
+                            <Border x:Name="InHandle" Width="14" CornerRadius="6,0,0,6" Background="#A855F7" Cursor="SizeWE" ToolTip="Drag to set where the cut starts (I)">
+                                <Border.Effect><DropShadowEffect Color="#A855F7" BlurRadius="12" ShadowDepth="0" Opacity="0.6"/></Border.Effect>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Rectangle Width="1.5" Height="18" Fill="#CCFFFFFF" RadiusX="1" RadiusY="1"/>
+                                    <Rectangle Width="1.5" Height="18" Fill="#CCFFFFFF" RadiusX="1" RadiusY="1" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="OutHandle" Width="14" CornerRadius="0,6,6,0" Background="#EC4899" Cursor="SizeWE" ToolTip="Drag to set where the cut ends (O)">
+                                <Border.Effect><DropShadowEffect Color="#EC4899" BlurRadius="12" ShadowDepth="0" Opacity="0.6"/></Border.Effect>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Rectangle Width="1.5" Height="18" Fill="#CCFFFFFF" RadiusX="1" RadiusY="1"/>
+                                    <Rectangle Width="1.5" Height="18" Fill="#CCFFFFFF" RadiusX="1" RadiusY="1" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Canvas x:Name="Playhead" IsHitTestVisible="False">
+                                <Rectangle x:Name="PlayheadLine" Width="2" Fill="White" Canvas.Left="-1">
+                                    <Rectangle.Effect><DropShadowEffect Color="Black" BlurRadius="6" ShadowDepth="0" Opacity="0.8"/></Rectangle.Effect>
+                                </Rectangle>
+                                <Path Data="M -7,0 L 7,0 L 7,6 L 0,12 L -7,6 Z" Fill="White" Canvas.Top="16">
+                                    <Path.Effect><DropShadowEffect Color="Black" BlurRadius="6" ShadowDepth="0" Opacity="0.6"/></Path.Effect>
+                                </Path>
+                            </Canvas>
+                        </Canvas>
+                    </Grid>
+
+                    <!-- in / out, length, save -->
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel>
+                                <TextBlock Text="START" FontSize="10" FontWeight="Bold" Foreground="#D8B4FE" Margin="2,0,0,4"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="InBox" Style="{StaticResource TimeBox}" KeyDown="TimeBox_KeyDown" LostKeyboardFocus="TimeBox_LostFocus"/>
+                                    <Button Style="{StaticResource Ghost}" Padding="10,7" Margin="6,0,0,0" Click="SetIn_Click" ToolTip="Start the cut at the current frame (I)">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Kbd}"><TextBlock Text="I" FontSize="10.5" FontWeight="SemiBold"/></Border>
+                                            <TextBlock Text="Set here"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Text="&#xE72A;" FontFamily="{StaticResource IconFont}" FontSize="13" Foreground="{StaticResource Text3}" VerticalAlignment="Bottom" Margin="16,0,16,11"/>
+                            <StackPanel>
+                                <TextBlock Text="END" FontSize="10" FontWeight="Bold" Foreground="#F9A8D4" Margin="2,0,0,4"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="OutBox" Style="{StaticResource TimeBox}" KeyDown="TimeBox_KeyDown" LostKeyboardFocus="TimeBox_LostFocus"/>
+                                    <Button Style="{StaticResource Ghost}" Padding="10,7" Margin="6,0,0,0" Click="SetOut_Click" ToolTip="End the cut at the current frame (O)">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Kbd}"><TextBlock Text="O" FontSize="10.5" FontWeight="SemiBold"/></Border>
+                                            <TextBlock Text="Set here"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="12,0">
+                            <TextBlock Text="CUT LENGTH" FontSize="10" FontWeight="Bold" Foreground="{StaticResource Text3}" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                            <Border CornerRadius="10" Padding="14,5" Background="#1FEC4899" BorderBrush="#44EC4899" BorderThickness="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="LengthText" Text="0.00 s" FontFamily="{StaticResource DisplayFont}" FontSize="17" FontWeight="SemiBold" Foreground="#FBCFE8"/>
+                                    <TextBlock x:Name="SizeText" Text="" FontSize="12" Foreground="{StaticResource Text2}" VerticalAlignment="Center" Margin="10,1,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" VerticalAlignment="Bottom">
+                            <Button x:Name="SaveBtn" Style="{StaticResource AccentButton}" Padding="22,11" FontSize="14" Click="Save_Click" ToolTip="Save the cut as a new clip (Ctrl+S)">
+                                <Grid>
+                                    <StackPanel x:Name="SaveIdle" Orientation="Horizontal">
+                                        <TextBlock Text="&#xE8C6;" FontFamily="{StaticResource IconFont}" FontSize="14" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                                        <TextBlock Text="Save cut"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="SaveBusy" Text="Saving…" Visibility="Collapsed" HorizontalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- progress while saving -->
+                    <Border x:Name="ProgressTrack" Height="4" CornerRadius="2" Background="#1AFFFFFF" Margin="0,14,0,0" Visibility="Collapsed">
+                        <Border x:Name="ProgressFill" CornerRadius="2" Background="{StaticResource Selection}" HorizontalAlignment="Left" Width="0"/>
+                    </Border>
+
+                    <!-- footer: destination, or the saved result (fixed height so the video does not jump) -->
+                    <Border Height="1" Background="{StaticResource Stroke}" Margin="0,16,0,12"/>
+                    <Grid Height="40">
+                        <StackPanel x:Name="DestRow" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFont}" FontSize="13" Foreground="#F9A8D4" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="Saves to " FontSize="12" Foreground="{StaticResource Text3}" VerticalAlignment="Center"/>
+                            <Button x:Name="DestLink" Style="{StaticResource Link}" Click="OpenEdited_Click" VerticalAlignment="Center"/>
+                            <TextBlock Text="  ·  the original clip stays untouched" FontSize="12" Foreground="{StaticResource Text3}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Border x:Name="DoneRow" CornerRadius="10" Background="#1A3DDC97" BorderBrush="#553DDC97" BorderThickness="1" Padding="12,7" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Width="22" Height="22" CornerRadius="11" Background="{StaticResource Good}" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE73E;" FontFamily="{StaticResource IconFont}" FontSize="11" Foreground="#0F0D14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
+                                    <TextBlock Text="Saved " FontWeight="SemiBold" Foreground="{StaticResource Good}"/>
+                                    <TextBlock x:Name="DoneText" Foreground="{StaticResource Text}" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <Button Style="{StaticResource Ghost}" Padding="11,5" FontSize="12" Click="PlaySaved_Click" Margin="0,0,6,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE768;" FontFamily="{StaticResource IconFont}" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Play"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource Ghost}" Padding="11,5" FontSize="12" Click="ShowSaved_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE838;" FontFamily="{StaticResource IconFont}" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Show in folder"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== video ===== -->
+            <Border x:Name="VideoFrame" Margin="20,0,20,0" CornerRadius="16" Background="Black" BorderBrush="#22FFFFFF" BorderThickness="1" ClipToBounds="True">
+                <Grid x:Name="VideoArea" Cursor="Hand" MouseLeftButtonUp="Video_Click">
+                    <MediaElement x:Name="Player" LoadedBehavior="Manual" UnloadedBehavior="Close" ScrubbingEnabled="True" Stretch="Uniform"
+                                  MediaOpened="Player_Opened" MediaEnded="Player_Ended" MediaFailed="Player_Failed"/>
+                    <!-- big play button while paused -->
+                    <Border x:Name="BigPlay" Width="76" Height="76" CornerRadius="38" Background="#99000000" BorderBrush="#55FFFFFF" BorderThickness="1"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
+                        <TextBlock Text="&#xE768;" FontFamily="{StaticResource IconFont}" FontSize="26" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    </Border>
+                    <Border CornerRadius="8" Background="#B3000000" Padding="9,4" Margin="14" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False">
+                        <TextBlock x:Name="InfoText" FontSize="11.5" FontWeight="SemiBold" Foreground="#E5E1EE"/>
+                    </Border>
+                    <Border x:Name="InCutBadge" CornerRadius="8" Background="{StaticResource Selection}" Padding="9,4" Margin="14" HorizontalAlignment="Right" VerticalAlignment="Top"
+                            IsHitTestVisible="False" Opacity="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8C6;" FontFamily="{StaticResource IconFont}" FontSize="11" Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="IN THE CUT" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock x:Name="ErrorText" Visibility="Collapsed" Foreground="{StaticResource Bad}" FontSize="13" TextWrapping="Wrap" TextAlignment="Center"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40"/>
+                    <!-- keyboard help -->
+                    <Border CornerRadius="8" Background="#99000000" Padding="10,5" Margin="14" HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False" x:Name="KeysHelp">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="11" Foreground="#C9C3D6" Text="Space  play"/>
+                            <TextBlock FontSize="11" Foreground="#6C6680" Text="   ·   "/>
+                            <TextBlock FontSize="11" Foreground="#C9C3D6" Text="← →  frame"/>
+                            <TextBlock FontSize="11" Foreground="#6C6680" Text="   ·   "/>
+                            <TextBlock FontSize="11" Foreground="#C9C3D6" Text="Shift + ← →  second"/>
+                            <TextBlock FontSize="11" Foreground="#6C6680" Text="   ·   "/>
+                            <TextBlock FontSize="11" Foreground="#C9C3D6" Text="I / O  set start / end"/>
+                            <TextBlock FontSize="11" Foreground="#6C6680" Text="   ·   "/>
+                            <TextBlock FontSize="11" Foreground="#C9C3D6" Text="Ctrl+S  save"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+        </DockPanel>
+    </Grid>
+</Window>

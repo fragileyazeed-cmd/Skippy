@@ -168,7 +168,7 @@ public partial class SettingsWindow : Window
         e.BeginAnimation(OpacityProperty, new DoubleAnimation(to, TimeSpan.FromMilliseconds(150)));
 
     /// <summary>Fine film grain over the background (a tiled noise texture).</summary>
-    static ImageBrush MakeGrain()
+    internal static ImageBrush MakeGrain()
     {
         const int n = 128;
         var px = new byte[n * n * 4];
@@ -804,7 +804,7 @@ public partial class SettingsWindow : Window
             _lastClip = null;
             LastClip.Text = "No clips yet";
             LastClipMeta.Text = $"press {_s.Hotkey} in a game to save one";
-            ClipButtons.Visibility = Visibility.Collapsed;
+            ClipButtons.Visibility = ShowClip.Visibility = Visibility.Collapsed;
             DurationBadge.Visibility = Visibility.Collapsed;
             ClipThumb.Background = (WpfBrush)new BrushConverter().ConvertFrom("#1C1824")!;
             ThumbPlaceholder.Visibility = Visibility.Visible;
@@ -812,7 +812,7 @@ public partial class SettingsWindow : Window
             return;
         }
         LastClip.Text = System.IO.Path.GetFileNameWithoutExtension(_lastClip);
-        ClipButtons.Visibility = Visibility.Visible;
+        ClipButtons.Visibility = ShowClip.Visibility = Visibility.Visible;
         UpdateLastClipMeta();
         if (_thumbFor != _lastClip) LoadThumbnail(_lastClip);
     }
@@ -857,6 +857,14 @@ public partial class SettingsWindow : Window
         try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_lastClip) { UseShellExecute = true }); }
         catch (Exception ex) { Log.Warn($"Could not open clip: {ex.Message}"); }
     }
+
+    void TrimClip_Click(object sender, RoutedEventArgs e)
+    {
+        if (_lastClip == null || !File.Exists(_lastClip)) return;
+        TrimWindow.Open(_s, _lastClip);
+    }
+
+    void TrimOther_Click(object sender, RoutedEventArgs e) => TrimWindow.PickAndOpen(_s, this);
 
     void ShowClip_Click(object sender, RoutedEventArgs e)
     {

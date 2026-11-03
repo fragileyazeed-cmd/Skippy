@@ -25,7 +25,19 @@ touches the disk until you save.
    - Click the **Recording** pill in the title bar to pause/resume
    - Live view while the window is open: buffer dial, resolution / encoder / audio / RAM tiles, LED audio
      meters, a small preview of the screen being recorded, and the last clip with its thumbnail
-4. Tray menu: Settings / Pause / Resume / Open folder / Exit.
+4. Tray menu: Settings / Pause / Resume / Trim a clip / Open folder / Exit.
+
+## Trimming a clip
+
+Click **✂ Trim** on the last-clip card (or **Trim another clip…**, or *Trim a clip* in the tray menu) to cut a
+piece out of a clip, e.g. from 0:34 to 0:39. Drag the purple start and pink end handles on the filmstrip, type
+exact times, or use the keys: **Space** play, **← →** one frame, **Shift+← →** one second, **I** / **O** set
+start / end at the current frame, **L** loop the cut, **Ctrl+S** save.
+
+**Save cut** writes a new file to `Videos\Skippy\EditedSkippy` (inside whatever save folder you chose), named
+after the original plus the range, e.g. `Skippy_2026-11-03_07-12-23_0m34.0s-0m39.0s.mp4`. The original is never
+changed. Cuts are exact to the frame: the kept part is decoded and encoded again on the GPU (about a second for
+a 5-second cut) at a slightly higher bitrate than the original, so there is no visible quality loss.
 
 Video is 1080p (the short side is capped at 1080 px; e.g. a 1440p monitor is scaled to 1920×1080),
 about 18 Mbps at 60 fps, 11 Mbps at 30 fps. Audio is AAC 192 kbps.
@@ -158,3 +170,5 @@ Run from a terminal; reports go to `%AppData%\Skippy\selftest.txt`.
 | `Skippy.exe --selftest-sync 185` | 3-minute A/V sync: flashes a square + beeps every 10 s, measures offset and drift |
 | `Skippy.exe --selftest-fullscreen` | real exclusive-fullscreen swap chain with solid colours, checks they were recorded |
 | `Skippy.exe --soak 1800` | 30 minutes with a 3-minute buffer, logs memory/handles/CPU each minute |
+| `Skippy.exe --selftest-trim [clip.mp4]` | trims a numbered test video at several ranges and checks the exact frames and audio length (add `--software` for the CPU path) |
+| `Skippy.exe --preview-trim clip.mp4` | opens just the trim window, next to a running Skippy |
