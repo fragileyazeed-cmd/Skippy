@@ -10,7 +10,7 @@
     <AssemblyTitle>Skippy</AssemblyTitle>
     <Description>Skippy instant replay</Description>
     <ApplicationIcon>Skippy.ico</ApplicationIcon>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <AssemblyMetadata Include="UpdateRepo" Value="$(UpdateRepo)" />
+    <Resource Include="Skippy.ico" />
   </ItemGroup>
 
   <ItemGroup>

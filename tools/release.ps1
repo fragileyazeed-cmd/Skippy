@@ -27,6 +27,8 @@ if ($LASTEXITCODE -eq 0) { throw "Release $tag already exists. Bump <Version> in
 
 $out = Join-Path $root "dist\Skippy-$version"
 $zip = Join-Path $root "dist\Skippy-$version-win-x64.zip"
+$oldSetup = Join-Path $root "dist\SkippySetup-$version.exe"
+if (Test-Path $oldSetup) { Remove-Item $oldSetup -Force }
 if (Test-Path $out) { Remove-Item $out -Recurse -Force }
 if (Test-Path $zip) { Remove-Item $zip -Force }
 
@@ -36,10 +38,18 @@ if ($LASTEXITCODE -ne 0) { throw "Build failed." }
 Compress-Archive -Path "$out\*" -DestinationPath $zip
 Write-Host ("Zipped {0:N1} MB -> {1}" -f ((Get-Item $zip).Length / 1MB), $zip)
 
+# installer (what you send to friends); the zip is what the in-app updater downloads
+$iscc = @("$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe", "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $iscc) { throw "Inno Setup not found (winget install JRSoftware.InnoSetup)." }
+$setup = Join-Path $root "dist\SkippySetup-$version.exe"
+& $iscc /Q "/DAppVersion=$version" "/DSourceDir=$out" (Join-Path $root 'installer\Skippy.iss')
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path $setup)) { throw "Building the installer failed." }
+Write-Host ("Installer {0:N1} MB -> {1}" -f ((Get-Item $setup).Length / 1MB), $setup)
+
 & $git -C $root tag $tag
 & $git -C $root push origin main $tag 2>&1 | ForEach-Object { "$_" }
 if ($LASTEXITCODE -ne 0) { throw "git push failed." }
 if (-not $Notes) { $Notes = "Skippy $version" }
-& $gh release create $tag $zip --title "Skippy $version" --notes $Notes
+& $gh release create $tag $setup $zip --title "Skippy $version" --notes $Notes
 if ($LASTEXITCODE -ne 0) { throw "gh release create failed." }
 Write-Host "Released $tag. Everyone's 'Check for updates' button now offers it."

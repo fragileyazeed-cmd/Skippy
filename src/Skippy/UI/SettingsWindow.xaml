@@ -55,7 +55,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image x:Name="Logo" Width="26" Height="26" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image x:Name="Logo" Width="26" Height="26" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                 <TextBlock Grid.Column="1" Text="Skippy" FontFamily="{StaticResource DisplayFont}" FontSize="17" FontWeight="SemiBold"
                            VerticalAlignment="Center" Margin="10,0,14,1"/>
                 <Border Grid.Column="2" x:Name="StatusPill" HorizontalAlignment="Left" VerticalAlignment="Center" CornerRadius="12" Padding="10,4,12,4"
@@ -217,6 +217,13 @@
                                 <TextBlock Grid.Column="1" x:Name="LastClip" Text="none yet" FontSize="12" Foreground="{StaticResource Text2}" TextTrimming="CharacterEllipsis"/>
                                 <Button Grid.Column="2" x:Name="ShowClip" Style="{StaticResource Link}" Content="Show" Click="ShowClip_Click" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </Grid>
+                            <Border Height="1" Background="{StaticResource Stroke}" Margin="0,12,0,12"/>
+                            <CheckBox x:Name="AutostartSwitch" Style="{StaticResource Switch}" Checked="Autostart_Changed" Unchecked="Autostart_Changed">
+                                <StackPanel>
+                                    <TextBlock Text="Start with Windows" FontSize="13"/>
+                                    <TextBlock Text="Buffering starts as soon as you sign in" FontSize="11.5" Foreground="{StaticResource Text3}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </CheckBox>
                         </StackPanel>
                     </Border>
                 </StackPanel>

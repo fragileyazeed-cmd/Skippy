@@ -66,12 +66,21 @@ public partial class SettingsWindow : Window
         _pulse = (Storyboard)Resources["Pulse"];
         _breathe = (Storyboard)Resources["Breathe"];
 
-        Logo.Source = ToImageSource(AppIcon.Draw(64));
-        Icon = Logo.Source;
+        // taskbar / Alt+Tab: the multi-size .ico, so Windows picks a pixel-perfect frame
+        Icon = BitmapFrame.Create(new Uri("pack://application:,,,/Skippy;component/Skippy.ico", UriKind.Absolute));
 
         (_s.ClipSeconds switch { 30 => Len30, 120 => Len120, 180 => Len180, _ => Len60 }).IsChecked = true;
         (_s.Fps == 30 ? Fps30 : Fps60).IsChecked = true;
         SoundSwitch.IsChecked = _s.PlaySound;
+        AutostartSwitch.IsChecked = Autostart.IsEnabled;
+        Activated += (_, _) =>
+        {
+            // someone may have flipped it in Task Manager meanwhile
+            bool was = _loading;
+            _loading = true;
+            AutostartSwitch.IsChecked = Autostart.IsEnabled;
+            _loading = was;
+        };
         FillAudio();
         ShowFolder();
         ShowHotkey();
@@ -79,7 +88,14 @@ public partial class SettingsWindow : Window
         _loading = false;
 
         SourceInitialized += (_, _) => ApplyDwmStyle();
-        Loaded += (_, _) => { Animate(); BuildMonitorMap(); };
+        Loaded += (_, _) =>
+        {
+            // pixel art must be drawn at the exact device size (no resampling) to stay sharp
+            double dpi = VisualTreeHelper.GetDpi(this).DpiScaleX;
+            Logo.Source = ToImageSource(AppIcon.Draw((int)Math.Round(Logo.Width * dpi)));
+            Animate();
+            BuildMonitorMap();
+        };
         MapFrame.SizeChanged += (_, _) => BuildMonitorMap();
         StateChanged += (_, _) => { if (WindowState == WindowState.Maximized) WindowState = WindowState.Normal; };
         PreviewKeyDown += OnPreviewKeyDown;
@@ -299,6 +315,12 @@ public partial class SettingsWindow : Window
         _s.PlaySound = SoundSwitch.IsChecked == true;
         _changed();
         if (_s.PlaySound) Chime.Play();   // let people hear what they just enabled
+    }
+
+    void Autostart_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        Autostart.SetEnabled(AutostartSwitch.IsChecked == true);
     }
 
     // ---------------------------------------------------------------- audio devices

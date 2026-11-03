@@ -59,7 +59,12 @@ static class Program
                 return code;
             }
 
-            if (args.Length == 2 && args[0] == "--write-icon") { AppIcon.WriteIco(args[1]); return 0; }
+            if (args.Length == 2 && args[0] == "--write-icon")
+            {
+                if (args[1].EndsWith(".png", StringComparison.OrdinalIgnoreCase)) AppIcon.WritePreview(args[1]);
+                else AppIcon.WriteIco(args[1]);
+                return 0;
+            }
             if (Updater.IsApplyMode(args)) return Updater.Apply(args);   // runs from the downloaded update, before the single-instance check
             Updater.CleanUp();
 

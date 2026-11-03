@@ -3,9 +3,24 @@ using System.Drawing.Imaging;
 
 namespace Skippy.UI;
 
-/// <summary>The Skippy icon, drawn in code: a "replay" ring with a record dot on a violet tile. Grey when paused.</summary>
+/// <summary>
+/// The Skippy icon, drawn in code: a white pixel-art "S" on the violet→pink rounded tile (grey when paused).
+/// The S sits on a whole-pixel grid at every size, so it stays crisp in the 16 px tray and the taskbar.
+/// </summary>
 public static class AppIcon
 {
+    // 5 x 7 pixel-font S
+    static readonly string[] Glyph =
+    [
+        ".###.",
+        "#...#",
+        "#....",
+        ".###.",
+        "....#",
+        "#...#",
+        ".###.",
+    ];
+
     public static Bitmap Draw(int size, bool paused = false)
     {
         var bmp = new Bitmap(size, size, PixelFormat.Format32bppArgb);
@@ -14,33 +29,36 @@ public static class AppIcon
         g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
         float s = size;
-        float r = s * 0.22f;
-        using (var tile = RoundedRect(new RectangleF(s * 0.02f, s * 0.02f, s * 0.96f, s * 0.96f), r))
+        float r = Math.Max(2.5f, s * 0.2f);
+        using (var tile = RoundedRect(new RectangleF(0, 0, s, s), r))
         using (var fill = new LinearGradientBrush(new PointF(0, 0), new PointF(s, s),
                    paused ? Color.FromArgb(0x8A, 0x8A, 0x96) : Color.FromArgb(0x6D, 0x4A, 0xFF),
                    paused ? Color.FromArgb(0x5A, 0x5A, 0x66) : Color.FromArgb(0xE0, 0x3E, 0x8C)))
             g.FillPath(fill, tile);
 
-        // replay ring: ~300° arc with an arrow head at its start
-        float stroke = Math.Max(1.5f, s * 0.11f);
-        var ring = new RectangleF(s * 0.24f, s * 0.24f, s * 0.52f, s * 0.52f);
-        using (var pen = new Pen(Color.White, stroke) { StartCap = LineCap.Round, EndCap = LineCap.Round })
-            g.DrawArc(pen, ring, -60, 290);
-        double a = -60 * Math.PI / 180;
-        var tip = new PointF(ring.X + ring.Width / 2 + (float)Math.Cos(a) * ring.Width / 2, ring.Y + ring.Height / 2 + (float)Math.Sin(a) * ring.Height / 2);
-        float h = s * 0.17f;
-        g.FillPolygon(Brushes.White, new[]
+        // pixel S: whole-pixel cells, no anti-aliasing, centred
+        int cell = Math.Max(1, (int)Math.Round(size * 0.72 / 7));
+        int w = 5 * cell, h = 7 * cell;
+        int x0 = (size - w) / 2, y0 = (size - h) / 2;
+        g.SmoothingMode = SmoothingMode.None;
+        g.PixelOffsetMode = PixelOffsetMode.Half;
+        if (size >= 32)
         {
-            new PointF(tip.X - h * 0.15f, tip.Y - h * 0.9f),
-            new PointF(tip.X + h * 0.85f, tip.Y + h * 0.15f),
-            new PointF(tip.X - h * 0.55f, tip.Y + h * 0.45f),
-        });
-
-        // record dot
-        float d = s * 0.2f;
-        using (var dot = new SolidBrush(paused ? Color.FromArgb(0xDD, 0xDD, 0xDD) : Color.White))
-            g.FillEllipse(dot, s / 2 - d / 2, s / 2 - d / 2, d, d);
+            // soft drop shadow one sub-cell down-right gives the pixels a bit of depth
+            int off = Math.Max(1, cell / 4);
+            using var shadow = new SolidBrush(Color.FromArgb(70, 30, 10, 60));
+            FillGlyph(g, shadow, x0 + off, y0 + off, cell);
+        }
+        using (var white = new SolidBrush(paused ? Color.FromArgb(0xE6, 0xE6, 0xEA) : Color.White))
+            FillGlyph(g, white, x0, y0, cell);
         return bmp;
+    }
+
+    static void FillGlyph(Graphics g, Brush b, int x0, int y0, int cell)
+    {
+        for (int row = 0; row < Glyph.Length; row++)
+            for (int col = 0; col < Glyph[row].Length; col++)
+                if (Glyph[row][col] == '#') g.FillRectangle(b, x0 + col * cell, y0 + row * cell, cell, cell);
     }
 
     public static Icon Create(int size, bool paused = false)
@@ -69,6 +87,27 @@ public static class AppIcon
             offset += pngs[i].Length;
         }
         foreach (var p in pngs) w.Write(p);
+    }
+
+    /// <summary>Dev aid: every icon size side by side on light and dark backgrounds, plus the 16 px one zoomed 6x.</summary>
+    public static void WritePreview(string path)
+    {
+        int[] sizes = [16, 20, 24, 32, 48, 64, 128];
+        int w = sizes.Sum() + 12 * sizes.Length + 16 * 6 + 24, h = 2 * 128 + 36;
+        using var bmp = new Bitmap(w, h);
+        using var g = Graphics.FromImage(bmp);
+        g.InterpolationMode = InterpolationMode.NearestNeighbor;
+        g.PixelOffsetMode = PixelOffsetMode.Half;
+        g.FillRectangle(Brushes.WhiteSmoke, 0, 0, w, h / 2);
+        using (var dark = new SolidBrush(Color.FromArgb(0x20, 0x20, 0x20))) g.FillRectangle(dark, 0, h / 2, w, h / 2);
+        for (int band = 0; band < 2; band++)
+        {
+            int x = 12, y0 = band * h / 2 + 12;
+            foreach (var s in sizes) { using var i = Draw(s); g.DrawImageUnscaled(i, x, y0 + (128 - s)); x += s + 12; }
+            using var small = Draw(16);
+            g.DrawImage(small, new Rectangle(x, y0 + 32, 96, 96));
+        }
+        bmp.Save(path, ImageFormat.Png);
     }
 
     public static void WritePng(string path, int size)
